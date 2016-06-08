@@ -34,10 +34,8 @@ class Login extends CI_Controller {
 
 	function check_database()
 	{
-		$user_name= $this->input->post('user_name');
-		$password= md5($this->input->post('password'));
 		$this->load->model('membership_model');
-		$query = $this->membership_model->validate($user_name, $password);
+		$query = $this->membership_model->validate();
 		
 		if($query) // if the user's credentials validated...
 		{
@@ -82,18 +80,10 @@ class Login extends CI_Controller {
 		}
 		
 		else
-		{	
-
-			$new_customer_insert_data = array(
-				'FIRST_NAME' => $this->input->post('FIRST_NAME'),
-				'LAST_NAME' => $this->input->post('LAST_NAME'),
-				'EMAIL' => $this->input->post('EMAIL'),			
-				'USER_NAME' => $this->input->post('USER_NAME'),
-				'PASSWORD' => md5($this->input->post('PASSWORD'))						
-			);		
+		{			
 			$this->load->model('membership_model');
 			
-			if($query = $this->membership_model->create_member($new_customer_insert_data))
+			if($query = $this->membership_model->create_member())
 			{
 				// $data['main_content'] = 'signup_successful';
 				// $this->load->view('includes/template', $data);
@@ -111,9 +101,8 @@ class Login extends CI_Controller {
 
 	function check_user()
 	{
-		$user_name = $this->input->post('USER_NAME');
 		$this->load->model('membership_model');
-		$exists = $this->membership_model->is_user_existed($user_name);
+		$exists = $this->membership_model->is_user_existed();
 
 		if($exists)
 		{

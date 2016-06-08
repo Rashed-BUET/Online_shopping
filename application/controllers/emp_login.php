@@ -38,9 +38,7 @@ class Emp_login extends CI_Controller {
 	{
 		
 		$this->load->model('emp_membership_model');
-		$usrname = $this->input->post('user_name');
-		$passwrd = $this->input->post('password') ;
-		$query = $this->emp_membership_model->validate($usrname,$passwrd);
+		$query = $this->emp_membership_model->validate();
 		
 		if($query) // if the user's credentials validated...
 		{
@@ -100,14 +98,6 @@ class Emp_login extends CI_Controller {
 		$this->form_validation->set_rules('PASSWORD', 'Password', 'trim|required|min_length[4]|max_length[32]');
 		$this->form_validation->set_rules('PASSWORD2', 'Password Confirmation', 'trim|required|matches[PASSWORD]');
 		
-		$new_employee_insert_data = array(
-			'FIRST_NAME' => $this->input->post('FIRST_NAME'),
-			'LAST_NAME' => $this->input->post('LAST_NAME'),
-			'OUTLET_ID' => $this->input->post('OUTLET_ID'),
-			'EMAIL' => $this->input->post('EMAIL'),			
-			'USER_NAME' => $this->input->post('USER_NAME'),
-			'PASSWORD' => md5($this->input->post('PASSWORD'))						
-		);
 		
 		if($this->form_validation->run() == FALSE)
 		{
@@ -127,7 +117,7 @@ class Emp_login extends CI_Controller {
 		{			
 			$this->load->model('emp_membership_model');
 			
-			if($query = $this->emp_membership_model->create_member($new_employee_insert_data))
+			if($query = $this->emp_membership_model->create_member())
 			{
 				//$data['main_content'] = 'emp_signup_successful';
 				redirect('emp_login');
@@ -142,8 +132,7 @@ class Emp_login extends CI_Controller {
 	function check_user()
 	{
 		$this->load->model('emp_membership_model');
-		$usrname = $this->input->post('USER_NAME');
-		$exists = $this->emp_membership_model->is_user_existed($usrname);
+		$exists = $this->emp_membership_model->is_user_existed();
 
 		if($exists)
 		{
@@ -158,9 +147,8 @@ class Emp_login extends CI_Controller {
 
 	function check_outlet()
 	{
-		$outlet_id = $this->input->post('OUTLET_ID');
 		$this->load->model('emp_membership_model');
-		$presents = $this->emp_membership_model->is_outlet_present($outlet_id);
+		$presents = $this->emp_membership_model->is_outlet_present();
 
 		if($presents)
 		{

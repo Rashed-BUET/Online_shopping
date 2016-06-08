@@ -29,7 +29,6 @@
         else echo 'Welcome Guest!';
       ?>
     </a></li>
-    <li><a   href="<?php echo site_url('needed_product_controller/load_needed_product_view') ?>">Needed Products</a></li>
   </ul>
 
   <div class="tab-content">

@@ -34,9 +34,18 @@ class Order_model extends CI_Model {
 		return $query->result();
 	}	
 
-function create_order($new_order_insert_data, $prods)
+	function create_order()
 	{
-		$ins = 1;
+		
+		$new_order_insert_data = array(
+		    'CUSTOMER_ID' => $this->session->userdata('user_info')->CUSTOMER_ID
+		);
+
+		$this->db->set('ORDER_DATE', 'NOW()', FALSE);
+		$this->db->insert('orders', $new_order_insert_data);
+		$order_id = $this->db->insert_id();
+
+
 
 		$new_order_status_insert_data = array(
 		    'EMPLOYEE_ID' => 1,
@@ -44,17 +53,25 @@ function create_order($new_order_insert_data, $prods)
 		    'STATUS' => "Pending"
 		);
 
-		$il = $this->db->insert('order_status', $new_order_status_insert_data);
-		if($il != 1)
-				$ins = 0;
+		$this->db->insert('order_status', $new_order_status_insert_data);
 
-		foreach ($prods as $item) {
-			$il = $this->db->insert('products_ordered', $item);
-			if($il != 1)
-				$ins = 0;
-		}
+
+		$cart = $this->cart->contents();
 		
-		return $ins;
+		 foreach ($cart as $item)
+		 {
+			$new_product_ordered_insert_data = array(
+			    'PRODUCT_ID' => $item['id'],
+			    'OUTLET_ID'	 => 1,
+			    'ORDER_ID'   => $order_id,
+			    'QUANTITY'   => $item['qty']
+			);
+
+			$this->db->insert('products_ordered', $new_product_ordered_insert_data);		
+
+		}
+		redirect('database_controller/destroy');
+		return $new_order_insert_data;
 	}
 
 
@@ -78,22 +95,23 @@ function create_order($new_order_insert_data, $prods)
 		$this->db->delete('outlets');
 	}	
 
-function update_order_status($new_outlet_order_status_data, $order_id){
+	function update_order_status(){
 		echo "updated order";
+		$new_outlet_order_status_data = array(
+				'STATUS' => $this->input->post('STATUS'),
+				'EMPLOYEE_ID' => $this->input->post('EMPLOYEE_ID')
+			);
 
-		$this->db->where('ORDER_ID', $order_id );
+		$this->db->where('ORDER_ID',$this->input->post('ORDER_ID') );
 		if( !$this->db->update('order_status',$new_outlet_order_status_data) )
 		{
 			echo "successful";
-			return 1;
 		}
 		else
 		{
 			echo "failed";
-			return 0;
 		}
 	}
-
 	function show_details()
 	{
 		$this->db->select('*');
